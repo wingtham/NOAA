@@ -1,0 +1,171 @@
+---
+title: "Vignette"
+author: "Wing Tham"
+date: "10 August 2017"
+output: html_document
+---
+  
+#Introduction
+U.S. National Oceanographic and Atmospheric Administration (NOAA) dataset contain significant earthquakes around the world. It contains information about 5,933 earthquakes over an approximately 4,000 year time span. This package provides functionalities to read, clean and visualise its data. This vignette goes through each of the function in details.
+
+
+## Read and Clean Earthquake Data
+
+readr::read_delim is used to read the earthquake data.  
+```{r }
+library(readr)
+library(stringr)
+
+#set path
+source(file.path("..", "r", "dataprep.r"))
+
+# #Read data
+df <- read_delim(file = file.path("..", "ins", "extdata", "signif.txt"),
+                 delim = "\t")
+```
+There are two functions implemented to clean the data. They are eq_clean_data()
+and eq_location_clean() rspectively. The later function is embedded in the first function.
+eq_clean_data() creates a date column and changes some columns to numerical format, 
+while eq_location_clean() removes country name from the LOCATION_NAME column 
+(by referencing the COUNTRY column). The data cleanse can be executed in the
+following way. Note that all further functionalities assume the data is cleansed.
+```{r}
+df <- df %>% eq_clean_data()
+```
+
+##Plotting Selected Earthquakes 
+###Basic plotting
+geom_timeline (and stat_timeline) is the core function to plot selected earthquake points. The following illustrates the basic plotting, which is not very meaningful.
+```{r}
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+library(grid)
+library(lubridate)
+source(file.path("..", "r", "geomtimeline.r"))
+# plot examples
+#limit to 2 countries
+selected <- df %>% filter(COUNTRY=="JAPAN" | COUNTRY == "CHINA")
+
+#basic
+ggplot(data = selected) + aes(x=DATE) + geom_timeline()
+
+```
+
+##Plotting with Magnitude and Death mapped
+With further mapping, a more meaningful plot can be produced. This is done by mapping magnitude and death number as aesthetics. In addition, geom_timeline accepts xmin and xmax to limit dates for plotting purpose.
+```{r}
+#with xmin and xmax being the date range
+xmin <- ymd("2010-01-01") %>% as.Date()
+xmax <- ymd("2014-01-01") %>% as.Date()
+
+#mapping magnitude and death, basic layout
+ggplot(data = selected) + 
+  aes(x=DATE, colour = TOTAL_DEATHS, 
+    size = EQ_PRIMARY) + 
+  geom_timeline(xmin=xmin, xmax=xmax) 
+
+```
+
+##Theme and adjustment for plotting purpose
+The above plot can be refined with ggplot2 and theme adjustments.
+```{r}
+#mapping magnitude and death, with desired theme and legend adjustments
+ggplot(data = selected) + 
+  aes(x=DATE, colour = TOTAL_DEATHS, 
+      size = EQ_PRIMARY) + 
+  geom_timeline(xmin=xmin, xmax=xmax) +
+  theme_timeline() +
+  scale_size_continuous(name = "Richter scale value") + #change legend name
+  scale_colour_continuous(name = "# Deaths") +
+  scale_x_date(limits = c(xmin-months(6), xmax+months(6))) #extend the axis so that data is central
+```
+
+##Stratification at y-axis
+When y is mapped, say to COUNTRY, it enables visualisation and comparison of the earthquakes of both countries.
+```{r}
+#Stratification at Y Axis
+ggplot(data = selected) + 
+  aes(x=DATE, y=COUNTRY, 
+      colour = TOTAL_DEATHS, 
+      size = EQ_PRIMARY) + 
+  geom_timeline(xmin=xmin, xmax=xmax) +
+  theme_timeline() +
+  scale_size_continuous(name = "Richter scale value") + #change legend name
+  scale_colour_continuous(name = "# Deaths") +
+  scale_x_date(limits = c(xmin-months(6), xmax+months(6))) #extend the axis so that data is central
+```
+
+##Annotation of time points
+In addition to plotting the earthquake time points, annotations can be done using geom_timelinelabel. With annotation, each time point is labelled with the location name. The number of annotation can be specified by the variable n_max. The availability of this variable is to ensure the plot is not over-crowded by texts.
+
+Note that the geom_timelinelabel function should be used in conjunction with geom_timeline, because without the time points, the annotations are meaningless. Therefore, it is important to map the appropriate aesthetics for both geom_timeline and geom_timelinelabel. This should include even the date range specified by xmin and xmax. There are two use of annotations as illustrated in the following:
+
+###Annotation by Magnitude
+```{r}
+source(file.path("..", "r", "geomlabel.r"))
+#timeline with annotation, by magnitude
+xmin <- ymd("2012-01-01") %>% as.Date()
+xmax <- ymd("2015-01-01") %>% as.Date()
+
+ggplot(data = selected) + 
+  aes(x=DATE, y=COUNTRY, 
+      colour = TOTAL_DEATHS,
+      size = EQ_PRIMARY,
+      label=LOCATION_NAME, byCol=EQ_PRIMARY,
+      xmin = xmin, xmax = xmax) + 
+  geom_timeline() +
+  geom_timelabel(n_max=5) +
+  theme_timeline() +
+  scale_size_continuous(name = "Richter scale value") + #change legend name
+  scale_colour_continuous(name = "# Deaths") +
+  scale_x_date(limits = c(xmin-months(6), xmax+months(6))) #extend the axis so that data is central
+```
+
+###Annotation by Death Number
+```{r}
+#by death
+xmin <- ymd("2000-01-01") %>% as.Date()
+xmax <- ymd("2010-01-01") %>% as.Date()
+
+ggplot(data = selected) + 
+  aes(x=DATE, y=COUNTRY, 
+      colour = TOTAL_DEATHS,
+      size = EQ_PRIMARY,
+      label=LOCATION_NAME, byCol=TOTAL_DEATHS,
+      xmin = xmin, xmax = xmax) + 
+  geom_timeline() +
+  geom_timelabel(n_max=5) +
+  theme_timeline() +
+  scale_size_continuous(name = "Richter scale value") + #change legend name
+  scale_colour_continuous(name = "# Deaths") +
+  scale_x_date(limits = c(xmin-months(6), xmax+months(6))) #extend the axis so that data is central
+
+```
+
+##Interactive map of selected earthquakes
+###Simple pop-up implementation
+A function is implmented to visualise latitude and longitude of selected earthquakes. eq_map acts as a wrapper of the leaflet package, plotting pop-ups for selected earthquakes. This is illustrated in the following.
+```{r}
+source(file.path("..", "r", "interactivemap.r"))
+#Read file
+df <- read_delim(file = file.path("..", "ins", "extdata", "signif.txt"),
+                 delim = "\t") %>%
+        eq_clean_data() 
+
+#simple pop-up
+df %>%
+  dplyr::filter(COUNTRY == "MEXICO" & year(DATE) >=2000) %>%
+  eq_map(annot_col = "DATE")
+
+```
+
+###Detailed Pop-up message preparation
+Further details are prepared to show up in the pop-up. The details are derived from the datasets, they are location, magnitude and number of deaths.
+```{r}
+df %>%
+  dplyr::filter(COUNTRY == "MEXICO" & year(DATE) >=2000) %>%
+  dplyr::mutate(popup_text = eq_create_label(.)) %>%
+  eq_map(annot_col = "popup_text")
+
+```
