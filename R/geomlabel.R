@@ -99,7 +99,7 @@ GeomTimelabel <- ggplot2::ggproto("GeomTimelabel", GeomLabel,
 #' for xmin and xmax if they are required. Refer to example / vigenette.
 #' @return layer annotation object for plotting purpose
 #' @import ggplot2
-#' @example \dontrun{ggplot(data = selected) + aes(x=DATE, y=COUNTRY, colour =
+#' @examples \dontrun{ggplot(data = selected) + aes(x=DATE, y=COUNTRY, colour =
 #'   TOTAL_DEATHS, size = EQ_PRIMARY, label=LOCATION_NAME, byCol=EQ_PRIMARY,
 #'   xmin = xmin, xmax = xmax) + geom_timeline() + geom_timelabel(n_max=5) +
 #'   theme_timeline() + scale_size_continuous(name = "Richter scale value") +
@@ -201,7 +201,7 @@ StatTimelabel <- ggplot2::ggproto("StatTimelabel", Stat,
 #' geom_timeline().
 #' @return layer object for plotting purpose
 #' @import ggplot2
-#' @example \dontrun{
+#' @examples \dontrun{
 #' ggplot(data = selected) +
 #'   aes(x=DATE, y=COUNTRY,
 #'       colour = TOTAL_DEATHS,

@@ -2,17 +2,28 @@
 title: "Vignette"
 author: "Wing Tham"
 date: "10 August 2017"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{NOAA_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
 ---
-  
+```{r global_options, echo=FALSE}
+#set up global options to hid message and warning
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
 #Introduction
 U.S. National Oceanographic and Atmospheric Administration (NOAA) dataset contain significant earthquakes around the world. It contains information about 5,933 earthquakes over an approximately 4,000 year time span. This package provides functionalities to read, clean and visualise its data. This vignette goes through each of the function in details.
 
 
-## Read and Clean Earthquake Data
+# Read and Clean Earthquake Data
 
 readr::read_delim is used to read the earthquake data.  
-```{r }
+```{r read_data}
 library(readr)
 library(stringr)
 
@@ -24,19 +35,19 @@ df <- read_delim(file = file.path("..", "ins", "extdata", "signif.txt"),
                  delim = "\t")
 ```
 There are two functions implemented to clean the data. They are eq_clean_data()
-and eq_location_clean() rspectively. The later function is embedded in the first function.
+and eq_location_clean() respectively. The later function is embedded in the first function.
 eq_clean_data() creates a date column and changes some columns to numerical format, 
 while eq_location_clean() removes country name from the LOCATION_NAME column 
 (by referencing the COUNTRY column). The data cleanse can be executed in the
 following way. Note that all further functionalities assume the data is cleansed.
-```{r}
+```{r clean_data}
 df <- df %>% eq_clean_data()
 ```
 
-##Plotting Selected Earthquakes 
-###Basic plotting
+#Plotting Selected Earthquakes 
+##Basic plotting
 geom_timeline (and stat_timeline) is the core function to plot selected earthquake points. The following illustrates the basic plotting, which is not very meaningful.
-```{r}
+```{r basic_plot}
 library(magrittr)
 library(ggplot2)
 library(dplyr)
@@ -52,9 +63,9 @@ ggplot(data = selected) + aes(x=DATE) + geom_timeline()
 
 ```
 
-##Plotting with Magnitude and Death mapped
+#Plotting with Magnitude and Death mapped
 With further mapping, a more meaningful plot can be produced. This is done by mapping magnitude and death number as aesthetics. In addition, geom_timeline accepts xmin and xmax to limit dates for plotting purpose.
-```{r}
+```{r mapping_plot}
 #with xmin and xmax being the date range
 xmin <- ymd("2010-01-01") %>% as.Date()
 xmax <- ymd("2014-01-01") %>% as.Date()
@@ -67,9 +78,9 @@ ggplot(data = selected) +
 
 ```
 
-##Theme and adjustment for plotting purpose
+#Theme and adjustment for plotting purpose
 The above plot can be refined with ggplot2 and theme adjustments.
-```{r}
+```{r theme_plot}
 #mapping magnitude and death, with desired theme and legend adjustments
 ggplot(data = selected) + 
   aes(x=DATE, colour = TOTAL_DEATHS, 
@@ -81,9 +92,9 @@ ggplot(data = selected) +
   scale_x_date(limits = c(xmin-months(6), xmax+months(6))) #extend the axis so that data is central
 ```
 
-##Stratification at y-axis
+#Stratification at y-axis
 When y is mapped, say to COUNTRY, it enables visualisation and comparison of the earthquakes of both countries.
-```{r}
+```{r stratification_plot}
 #Stratification at Y Axis
 ggplot(data = selected) + 
   aes(x=DATE, y=COUNTRY, 
@@ -96,13 +107,13 @@ ggplot(data = selected) +
   scale_x_date(limits = c(xmin-months(6), xmax+months(6))) #extend the axis so that data is central
 ```
 
-##Annotation of time points
+#Annotation of time points
 In addition to plotting the earthquake time points, annotations can be done using geom_timelinelabel. With annotation, each time point is labelled with the location name. The number of annotation can be specified by the variable n_max. The availability of this variable is to ensure the plot is not over-crowded by texts.
 
 Note that the geom_timelinelabel function should be used in conjunction with geom_timeline, because without the time points, the annotations are meaningless. Therefore, it is important to map the appropriate aesthetics for both geom_timeline and geom_timelinelabel. This should include even the date range specified by xmin and xmax. There are two use of annotations as illustrated in the following:
 
-###Annotation by Magnitude
-```{r}
+##Annotation by Magnitude
+```{r annotation1_plot}
 source(file.path("..", "r", "geomlabel.r"))
 #timeline with annotation, by magnitude
 xmin <- ymd("2012-01-01") %>% as.Date()
@@ -122,8 +133,8 @@ ggplot(data = selected) +
   scale_x_date(limits = c(xmin-months(6), xmax+months(6))) #extend the axis so that data is central
 ```
 
-###Annotation by Death Number
-```{r}
+##Annotation by Death Number
+```{r annotation2_plot}
 #by death
 xmin <- ymd("2000-01-01") %>% as.Date()
 xmax <- ymd("2010-01-01") %>% as.Date()
@@ -143,10 +154,10 @@ ggplot(data = selected) +
 
 ```
 
-##Interactive map of selected earthquakes
-###Simple pop-up implementation
+#Interactive map of selected earthquakes
+##Simple pop-up implementation
 A function is implmented to visualise latitude and longitude of selected earthquakes. eq_map acts as a wrapper of the leaflet package, plotting pop-ups for selected earthquakes. This is illustrated in the following.
-```{r}
+```{r simple_interactive_map}
 source(file.path("..", "r", "interactivemap.r"))
 #Read file
 df <- read_delim(file = file.path("..", "ins", "extdata", "signif.txt"),
@@ -160,9 +171,9 @@ df %>%
 
 ```
 
-###Detailed Pop-up message preparation
+##Detailed Pop-up message preparation
 Further details are prepared to show up in the pop-up. The details are derived from the datasets, they are location, magnitude and number of deaths.
-```{r}
+```{r detailed_interactive_map}
 df %>%
   dplyr::filter(COUNTRY == "MEXICO" & year(DATE) >=2000) %>%
   dplyr::mutate(popup_text = eq_create_label(.)) %>%

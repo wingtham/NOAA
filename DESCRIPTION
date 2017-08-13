@@ -1,11 +1,18 @@
 Package: NOAA
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Read, Cleanse and Visualise NOAA Dataset
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Wing THAM
+Maintainer: Wing THAM <wingtham@abc.com>
+Description: The package implements methods to cleanse the NOAA dataset. NOAA stands for U.S. National Oceanographic and Atmospheric Administration, 
+    the dataset contain significant earthquakes around the world. The aim of the package is to cleanse the dataset so that it can be visualised in
+    two ways: Timeline by plotting the selected earthquakes, and interactive map showing the latitude and longitude with relevant information as
+    pop up of the earthquakes.
+License: CC0
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr

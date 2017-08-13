@@ -9,7 +9,7 @@
 #'   displayed.
 #' @return NULL
 #' @import leaftlet
-#' @example \dontrun{df %>% eq_map(df, "DATE")}
+#' @examples \dontrun{df %>% eq_map(df, "DATE")}
 #' @export
 eq_map <- function(df, annot_col) {
   leaflet::leaflet() %>%
@@ -36,7 +36,7 @@ eq_map <- function(df, annot_col) {
 #'   EQ_PRIMARY.
 #' @return vector of characters for HTML formatted popup messages
 #' @import leaftlet
-#' @example \dontrun{df %>% dplyr::mutate(popup_text = eq_create_label(.))}
+#' @examples \dontrun{df %>% dplyr::mutate(popup_text = eq_create_label(.))}
 #' @export
 eq_create_label <- function(df) {
 

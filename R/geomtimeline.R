@@ -88,7 +88,7 @@ StatTimeline <- ggplot2::ggproto("StatTimeline", Stat,
 #' geom_timeline().
 #' @return layer object for plotting purpose
 #' @import ggplot2
-#' @example \dontrun{ggplot(data=selected) +
+#' @examples \dontrun{ggplot(data=selected) +
 #'                     aes(x=DATE, y=COUNTRY) +
 #'                     stat_timeline(xmin=xmin, xmax=xmax)}
 #' @export
@@ -140,7 +140,7 @@ GeomTimeline <- ggplot2::ggproto("GeomTimeline", GeomPoint,
 #' For input arguments, please refer to \code{geom_point} for further details.
 #' @return layer object for plotting purpose
 #' @import ggplot2
-#' @example \dontrun{ggplot(data = selected) +
+#' @examples \dontrun{ggplot(data = selected) +
 #'    aes(x=DATE, colour = TOTAL_DEATHS,
 #'    size = EQ_PRIMARY) +
 #'    geom_timeline(xmin=xmin, xmax=xmax) }
@@ -162,9 +162,8 @@ geom_timeline <- function(mapping = NULL, data = NULL, stat = "timeline",
 #'
 #' A few tweaks to turn off the background and grids.
 #'
-#' @param NULL
 #' @return a theme object to be attached to ggplot command
-#' @example \dontrun{ggplot(data = selected) +
+#' @examples \dontrun{ggplot(data = selected) +
 #' aes(x=DATE, y=COUNTRY,
 #'    colour = TOTAL_DEATHS,
 #'    size = EQ_PRIMARY) +

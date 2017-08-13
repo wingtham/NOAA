@@ -14,7 +14,7 @@
 #' @importFrom magrittr `%>%`
 #' @importFrom dplyr mutate
 #' @importFrom lubridate ymd year
-#' @example \dontrun{df <- eq_clean_data(df)}
+#' @examples \dontrun{df <- eq_clean_data(df)}
 #' @export
 eq_clean_data <- function(df) {
 
@@ -55,7 +55,7 @@ eq_clean_data <- function(df) {
 #'
 #' @importFrom magrittr `%>%`
 #' @importFrom stringr str_to_title str_wrap
-#' @example \dontrun{df <- eq_location_clean(df)}
+#' @examples \dontrun{df <- eq_location_clean(df)}
 #' @export
 eq_location_clean <- function(df) {
 
