@@ -11,7 +11,7 @@
 #' @param df raw data frame of earthquake data
 #' @return df cleansed version of the earthquake data
 #'
-#' @importFrom magrittr `%>%`
+#' @import magrittr
 #' @importFrom dplyr mutate
 #' @importFrom lubridate ymd year
 #' @examples \dontrun{df <- eq_clean_data(df)}
@@ -53,7 +53,7 @@ eq_clean_data <- function(df) {
 #' @param df data frame of the earthquake data
 #' @return df data frame with cleansed LOCATION_NAME
 #'
-#' @importFrom magrittr `%>%`
+#' @import magrittr
 #' @importFrom stringr str_to_title str_wrap
 #' @examples \dontrun{df <- eq_location_clean(df)}
 #' @export

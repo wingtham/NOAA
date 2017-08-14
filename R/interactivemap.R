@@ -8,7 +8,7 @@
 #' @param annot_col character specifying the column where the annotation text is
 #'   displayed.
 #' @return NULL
-#' @import leaftlet
+#' @import leaflet
 #' @examples \dontrun{df %>% eq_map(df, "DATE")}
 #' @export
 eq_map <- function(df, annot_col) {
@@ -35,7 +35,7 @@ eq_map <- function(df, annot_col) {
 #'   to have columns for latitude, longitude, LOCATION_NAME, TOAL_DEATHS AND
 #'   EQ_PRIMARY.
 #' @return vector of characters for HTML formatted popup messages
-#' @import leaftlet
+#' @import leaflet
 #' @examples \dontrun{df %>% dplyr::mutate(popup_text = eq_create_label(.))}
 #' @export
 eq_create_label <- function(df) {
